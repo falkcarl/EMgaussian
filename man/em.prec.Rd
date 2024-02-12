@@ -8,7 +8,7 @@ em.prec(
   dat,
   max.iter = 500,
   tol = 1e-05,
-  start = c("listwise", "pairwise", "full", "diag"),
+  start = c("diag", "pairwise", "listwise", "full"),
   debug = 0,
   ...
 )
@@ -31,4 +31,11 @@ EM algorithm originally in Stadler & Buhlmann (2012)
 }
 \details{
 Additional details...
+}
+\examples{
+\dontrun{
+  library(psych)
+  data(bfi)
+  test <- em.prec(bfi[,1:25])
+}
 }

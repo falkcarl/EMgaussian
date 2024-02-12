@@ -7,8 +7,8 @@
 em.cov(
   dat,
   max.iter = 500,
-  tol = 1e-07,
-  start = c("listwise", "pairwise", "full", "diag"),
+  tol = 1e-05,
+  start = c("diag", "pairwise", "listwise", "full"),
   debug = 0,
   ...
 )
@@ -31,4 +31,12 @@ EM algorithm using covariance matrix parameterization
 }
 \details{
 Additional details...
+}
+\examples{
+\dontrun{
+  library(psych)
+  data(bfi)
+  test <- em.cov(bfi[,1:25])
+}
+
 }

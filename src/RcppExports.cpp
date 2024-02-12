@@ -11,33 +11,6 @@ Rcpp::Rostream<true>&  Rcpp::Rcout = Rcpp::Rcpp_cout_get();
 Rcpp::Rostream<false>& Rcpp::Rcerr = Rcpp::Rcpp_cerr_get();
 #endif
 
-// imp1sigma
-arma::colvec imp1sigma(Rcpp::NumericVector Muest, Rcpp::NumericMatrix Sigest, Rcpp::NumericVector Di, Rcpp::IntegerVector Im, Rcpp::NumericVector Io);
-RcppExport SEXP _EMgaussian_imp1sigma(SEXP MuestSEXP, SEXP SigestSEXP, SEXP DiSEXP, SEXP ImSEXP, SEXP IoSEXP) {
-BEGIN_RCPP
-    Rcpp::RObject rcpp_result_gen;
-    Rcpp::RNGScope rcpp_rngScope_gen;
-    Rcpp::traits::input_parameter< Rcpp::NumericVector >::type Muest(MuestSEXP);
-    Rcpp::traits::input_parameter< Rcpp::NumericMatrix >::type Sigest(SigestSEXP);
-    Rcpp::traits::input_parameter< Rcpp::NumericVector >::type Di(DiSEXP);
-    Rcpp::traits::input_parameter< Rcpp::IntegerVector >::type Im(ImSEXP);
-    Rcpp::traits::input_parameter< Rcpp::NumericVector >::type Io(IoSEXP);
-    rcpp_result_gen = Rcpp::wrap(imp1sigma(Muest, Sigest, Di, Im, Io));
-    return rcpp_result_gen;
-END_RCPP
-}
-// imp2sigma
-void imp2sigma(Rcpp::NumericMatrix T2, Rcpp::NumericMatrix Sigest, Rcpp::IntegerVector Im);
-RcppExport SEXP _EMgaussian_imp2sigma(SEXP T2SEXP, SEXP SigestSEXP, SEXP ImSEXP) {
-BEGIN_RCPP
-    Rcpp::RNGScope rcpp_rngScope_gen;
-    Rcpp::traits::input_parameter< Rcpp::NumericMatrix >::type T2(T2SEXP);
-    Rcpp::traits::input_parameter< Rcpp::NumericMatrix >::type Sigest(SigestSEXP);
-    Rcpp::traits::input_parameter< Rcpp::IntegerVector >::type Im(ImSEXP);
-    imp2sigma(T2, Sigest, Im);
-    return R_NilValue;
-END_RCPP
-}
 // imp1matsigma
 arma::mat imp1matsigma(Rcpp::NumericMatrix D, Rcpp::NumericVector Muest, Rcpp::NumericMatrix Sigest);
 RcppExport SEXP _EMgaussian_imp1matsigma(SEXP DSEXP, SEXP MuestSEXP, SEXP SigestSEXP) {
@@ -75,33 +48,6 @@ BEGIN_RCPP
     Rcpp::traits::input_parameter< int >::type np(npSEXP);
     rcpp_result_gen = Rcpp::wrap(nllmvn(D, Muest, Sigest, np));
     return rcpp_result_gen;
-END_RCPP
-}
-// imp1
-arma::colvec imp1(Rcpp::NumericVector Muest, Rcpp::NumericMatrix Kest, Rcpp::NumericVector Di, Rcpp::IntegerVector Im, Rcpp::NumericVector Io);
-RcppExport SEXP _EMgaussian_imp1(SEXP MuestSEXP, SEXP KestSEXP, SEXP DiSEXP, SEXP ImSEXP, SEXP IoSEXP) {
-BEGIN_RCPP
-    Rcpp::RObject rcpp_result_gen;
-    Rcpp::RNGScope rcpp_rngScope_gen;
-    Rcpp::traits::input_parameter< Rcpp::NumericVector >::type Muest(MuestSEXP);
-    Rcpp::traits::input_parameter< Rcpp::NumericMatrix >::type Kest(KestSEXP);
-    Rcpp::traits::input_parameter< Rcpp::NumericVector >::type Di(DiSEXP);
-    Rcpp::traits::input_parameter< Rcpp::IntegerVector >::type Im(ImSEXP);
-    Rcpp::traits::input_parameter< Rcpp::NumericVector >::type Io(IoSEXP);
-    rcpp_result_gen = Rcpp::wrap(imp1(Muest, Kest, Di, Im, Io));
-    return rcpp_result_gen;
-END_RCPP
-}
-// imp2
-void imp2(Rcpp::NumericMatrix T2, Rcpp::NumericMatrix Kest, Rcpp::IntegerVector Im);
-RcppExport SEXP _EMgaussian_imp2(SEXP T2SEXP, SEXP KestSEXP, SEXP ImSEXP) {
-BEGIN_RCPP
-    Rcpp::RNGScope rcpp_rngScope_gen;
-    Rcpp::traits::input_parameter< Rcpp::NumericMatrix >::type T2(T2SEXP);
-    Rcpp::traits::input_parameter< Rcpp::NumericMatrix >::type Kest(KestSEXP);
-    Rcpp::traits::input_parameter< Rcpp::IntegerVector >::type Im(ImSEXP);
-    imp2(T2, Kest, Im);
-    return R_NilValue;
 END_RCPP
 }
 // imp1mat
@@ -145,13 +91,9 @@ END_RCPP
 }
 
 static const R_CallMethodDef CallEntries[] = {
-    {"_EMgaussian_imp1sigma", (DL_FUNC) &_EMgaussian_imp1sigma, 5},
-    {"_EMgaussian_imp2sigma", (DL_FUNC) &_EMgaussian_imp2sigma, 3},
     {"_EMgaussian_imp1matsigma", (DL_FUNC) &_EMgaussian_imp1matsigma, 3},
     {"_EMgaussian_imp2matsigma", (DL_FUNC) &_EMgaussian_imp2matsigma, 3},
     {"_EMgaussian_nllmvn", (DL_FUNC) &_EMgaussian_nllmvn, 4},
-    {"_EMgaussian_imp1", (DL_FUNC) &_EMgaussian_imp1, 5},
-    {"_EMgaussian_imp2", (DL_FUNC) &_EMgaussian_imp2, 3},
     {"_EMgaussian_imp1mat", (DL_FUNC) &_EMgaussian_imp1mat, 3},
     {"_EMgaussian_imp2mat", (DL_FUNC) &_EMgaussian_imp2mat, 3},
     {"_EMgaussian_nllggm", (DL_FUNC) &_EMgaussian_nllggm, 4},

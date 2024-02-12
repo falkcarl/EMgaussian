@@ -30,11 +30,17 @@
 #' @importFrom Rcpp evalCpp 
 #' @useDynLib EMgaussian 
 #' @export
+#' @examples
+#' \dontrun{
+#'   library(psych)
+#'   data(bfi)
+#'   test <- em.prec(bfi[,1:25])
+#' }
 ##########################################################################################
 # EM algorithm originally in Stadler & Buhlmann (2012), which is on missing data w/ Gaussian graphical model
 # Try implementing their algorithm. Section 2.3.2
 # Just remove the glasso part and we have a saturated mean and covariance matrix
-em.prec <- function(dat, max.iter = 500, tol=1e-5, start=c("listwise","pairwise","full","diag"), debug=0,
+em.prec <- function(dat, max.iter = 500, tol=1e-5, start=c("diag","pairwise","listwise","full"), debug=0,
                      ...){
   
   start <- match.arg(start)

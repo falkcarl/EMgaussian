@@ -4,49 +4,6 @@
 
 // [[Rcpp::depends(RcppArmadillo)]]
 
-// First part of E-step for a single respondent
-// [[Rcpp::export]]
-arma::colvec imp1sigma(Rcpp::NumericVector Muest, Rcpp::NumericMatrix Sigest, Rcpp::NumericVector Di, Rcpp::IntegerVector Im, Rcpp::NumericVector Io){
-
-  // convert some input to armadillo objects
-  arma::colvec muest = Rcpp::as<arma::colvec>(Muest);
-  arma::mat sigest = Rcpp::as<arma::mat>(Sigest);
-  arma::colvec di = Rcpp::as<arma::colvec>(Di);
-  arma::uvec im = Rcpp::as<arma::uvec>(Im);
-  arma::uvec io = Rcpp::as<arma::uvec>(Io);
-  
-  arma::mat siginv = inv(sigest);
-  
-  // C++ indexing
-  im -= 1;
-  io -= 1;
-  
-  arma::colvec out = muest(im) - inv(siginv.submat(im,im)) * siginv.submat(im,io) * (di(io) - muest(io));
-
-  return(out);
-}
-  
-  
-// Second part of E-step for a single respondent
-// operates directly on T2 to avoid making a copy
-// [[Rcpp::export]]
-void imp2sigma(Rcpp::NumericMatrix T2, Rcpp::NumericMatrix Sigest, Rcpp::IntegerVector Im){
-
-  // convert some input to armadillo objects
-  arma::mat t2(T2.begin(), T2.rows(), T2.cols(), false);
-  arma::mat sigest = Rcpp::as<arma::mat>(Sigest);
-  arma::uvec im = Rcpp::as<arma::uvec>(Im);
-  
-  arma::mat siginv = inv(sigest);
-  
-  // C++ indexing
-  im -= 1;
-  
-  // output
-  t2.submat(im,im) += inv(siginv.submat(im,im)); 
-}
-    
-    
 // First part of E step for an entire data matrix
 // [[Rcpp::export]]
 arma::mat imp1matsigma(Rcpp::NumericMatrix D, Rcpp::NumericVector Muest, Rcpp::NumericMatrix Sigest){
