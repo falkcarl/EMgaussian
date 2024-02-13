@@ -20,5 +20,10 @@ Imports:
   matrixcalc,
   Matrix,
   lavaan
+Suggests:
+  testthat (>= 3.0.0),
+  psych
 LinkingTo: Rcpp, RcppArmadillo
+Config/testthat/edition: 3
 RoxygenNote: 7.2.3
+
