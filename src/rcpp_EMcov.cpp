@@ -22,14 +22,14 @@ arma::mat imp1matcov(Rcpp::NumericMatrix D, const arma::colvec muest, const arma
     d.submat(idx,im) = (muest(im) - inv(siginv.submat(im,im)) * siginv.submat(im,io) * (d.submat(idx,io).t() - muest(io))).t();        
   }
   
-  return(d);
+  return d;
 
 }
       
 // Second part of E step for an entire data matrix
 // operates directly on T2 to avoid making a copy
 // [[Rcpp::export]]
-void imp2matcov(Rcpp::NumericMatrix D, const arma::mat sigest, arma::mat t2){
+void imp2matcov(Rcpp::NumericMatrix D, const arma::mat sigest, arma::mat& t2){
 
   arma::mat d(D.begin(), D.rows(), D.cols(), true);
   
@@ -93,5 +93,5 @@ double nllcov(const arma::mat d, const arma::colvec muest, const arma::mat siges
     nll += (0.5*(log(det(sigest.submat(io,io))) + (d.submat(idx,io).t() - muest(io)).t() * inv(sigest.submat(io,io)) * (d.submat(idx,io).t() - muest(io)) + J*log(2*arma::datum::pi))).eval()(0,0);
   }
   
-  return(nll);
+  return nll;
 }

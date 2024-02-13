@@ -2,8 +2,8 @@ Package: EMgaussian
 Encoding: UTF-8
 Type: Package
 Title: EM algorithm for multivariate Gaussian (normal) with missing data
-Version: 0.1.1
-Date: 2024-02-12
+Version: 0.1.2
+Date: 2024-02-13
 Author: Carl F. Falk
 Maintainer: Carl F. Falk <carl.falk@mcgill.ca>
 Description: This package was initially designed to distribute code for

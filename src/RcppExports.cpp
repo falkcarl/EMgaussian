@@ -25,13 +25,13 @@ BEGIN_RCPP
 END_RCPP
 }
 // imp2matcov
-void imp2matcov(Rcpp::NumericMatrix D, const arma::mat sigest, arma::mat t2);
+void imp2matcov(Rcpp::NumericMatrix D, const arma::mat sigest, arma::mat& t2);
 RcppExport SEXP _EMgaussian_imp2matcov(SEXP DSEXP, SEXP sigestSEXP, SEXP t2SEXP) {
 BEGIN_RCPP
     Rcpp::RNGScope rcpp_rngScope_gen;
     Rcpp::traits::input_parameter< Rcpp::NumericMatrix >::type D(DSEXP);
     Rcpp::traits::input_parameter< const arma::mat >::type sigest(sigestSEXP);
-    Rcpp::traits::input_parameter< arma::mat >::type t2(t2SEXP);
+    Rcpp::traits::input_parameter< arma::mat& >::type t2(t2SEXP);
     imp2matcov(D, sigest, t2);
     return R_NilValue;
 END_RCPP
@@ -77,13 +77,13 @@ BEGIN_RCPP
 END_RCPP
 }
 // imp2matprec
-void imp2matprec(Rcpp::NumericMatrix D, const arma::mat kest, arma::mat t2);
+void imp2matprec(Rcpp::NumericMatrix D, const arma::mat kest, arma::mat& t2);
 RcppExport SEXP _EMgaussian_imp2matprec(SEXP DSEXP, SEXP kestSEXP, SEXP t2SEXP) {
 BEGIN_RCPP
     Rcpp::RNGScope rcpp_rngScope_gen;
     Rcpp::traits::input_parameter< Rcpp::NumericMatrix >::type D(DSEXP);
     Rcpp::traits::input_parameter< const arma::mat >::type kest(kestSEXP);
-    Rcpp::traits::input_parameter< arma::mat >::type t2(t2SEXP);
+    Rcpp::traits::input_parameter< arma::mat& >::type t2(t2SEXP);
     imp2matprec(D, kest, t2);
     return R_NilValue;
 END_RCPP

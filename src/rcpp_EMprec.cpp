@@ -25,7 +25,7 @@ arma::mat imp1matprec(Rcpp::NumericMatrix D, const arma::colvec muest, const arm
 // Second part of E step for an entire data matrix
 // operates directly on T2 to avoid making a copy
 // [[Rcpp::export]]
-void imp2matprec(Rcpp::NumericMatrix D, const arma::mat kest, arma::mat t2){
+void imp2matprec(Rcpp::NumericMatrix D, const arma::mat kest, arma::mat& t2){
   
   arma::mat d(D.begin(), D.rows(), D.cols(), true);
   
