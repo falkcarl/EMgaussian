@@ -6,7 +6,7 @@
 
 // First part of E step for an entire data matrix
 // [[Rcpp::export]]
-arma::mat imp1matcov(Rcpp::NumericMatrix D, const arma::colvec muest, const arma::mat sigest){  
+arma::mat imp1matcov(Rcpp::NumericMatrix D, const arma::colvec& muest, const arma::mat& sigest){  
 
   arma::mat d(D.begin(), D.rows(), D.cols(), true); // I think false means no copy; here we want one to avoid replacing original data
   
@@ -29,7 +29,7 @@ arma::mat imp1matcov(Rcpp::NumericMatrix D, const arma::colvec muest, const arma
 // Second part of E step for an entire data matrix
 // operates directly on T2 to avoid making a copy
 // [[Rcpp::export]]
-void imp2matcov(Rcpp::NumericMatrix D, const arma::mat sigest, arma::mat& t2){
+void imp2matcov(Rcpp::NumericMatrix D, const arma::mat& sigest, arma::mat& t2){
 
   arma::mat d(D.begin(), D.rows(), D.cols(), true);
   
@@ -46,7 +46,7 @@ void imp2matcov(Rcpp::NumericMatrix D, const arma::mat sigest, arma::mat& t2){
 
 // EM cycle all in one shot, covariance matrix parameterization
 // [[Rcpp::export]]
-Rcpp::List EMcyclecov(const Rcpp::NumericMatrix D, const arma::colvec muest, const arma::mat sigest){
+Rcpp::List EMcyclecov(const Rcpp::NumericMatrix& D, const arma::colvec& muest, const arma::mat& sigest){
   
   // First part of imputation
   arma::mat dimp = imp1matcov(D, muest, sigest);
