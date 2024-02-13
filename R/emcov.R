@@ -70,24 +70,12 @@ em.cov <- function(dat, max.iter = 500, tol=1e-5, start=c("diag","pairwise","lis
     covstart.sb<-as.matrix(nearPD(covstart.sb)$mat)
   }
   
-  # Some of these are specific to precision-matrix parameterization
-  # TODO: consider re-writing to avoid that
-  
+  # track change in means and covariances
   mu.est <- as.matrix(mustart.sb)
-  
-  # track change in covariance matrix estimates
   S.est.mat <- covstart.sb
   S.est <- lav_matrix_vechr(S.est.mat)
-  
   p.est <- c(mustart.sb, S.est)
-  
-  ones <- as.matrix(rep(1,nrow(dat)))
-  
-  # Estep
-  # Is this just the same as described in section 2.3
-  # Conditional expectation for just xji is the same!
-  N<-nrow(dat)
-  
+
   # loop until convergence
   conv<-FALSE
   for(it in 1:max.iter){
@@ -95,40 +83,25 @@ em.cov <- function(dat, max.iter = 500, tol=1e-5, start=c("diag","pairwise","lis
       print(paste0('iter ',it))
     }
     
-    d.imp<-imp1matsigma(dat,mu.est,S.est.mat)
+    # Do one EM cycle
+    EMres <- EMcyclecov(dat, mu.est, S.est.mat)
+    mu.est <- EMres$mu
+    S.est.mat <- EMres$S
     
-    T1 <- t(d.imp)%*%ones
-    
-    # What about for E[xijxij']?
-    # It looks like the imputations can be used directly, except for cases where both values are missing.
-    # We need to add K^m whatever.
-    # 1. Just do cross product with imputed dataset
-    T2 <- t(d.imp)%*%d.imp
-    
-    # 2. Then, add stuff to T2. Can loop over individuals
-    imp2matsigma(dat,S.est.mat,T2)
-    
-    # Now, compute mu
-    mu.est <- T1/N
-    
-    # update S, then feed to glasso
-    S<- (1/N)*T2 - mu.est%*%t(mu.est)
-    
-    if(!is.symmetric.matrix(S)){
-      S<-as.matrix(forceSymmetric(S))
+    # Check S
+    if(!is.symmetric.matrix(S.est.mat)){
+      S.est.mat<-as.matrix(forceSymmetric(S.est.mat))
       warnings("Non-symmetric S found after E step. Could indicate identification or estimation problem.")
     }
     
     # force positive-definite S
-    if(!is.positive.definite(S)){
-      S<-as.matrix(nearPD(S)$mat)
+    if(!is.positive.definite(S.est.mat)){
+      S.est.mat<-as.matrix(nearPD(S.est.mat)$mat)
       warnings("Non-positive definite S found after E step. Could indicate identification or estimation problem.")
-      
     }
     
-    S.est.mat <- S
+    # Save estimates
     S.est <- lav_matrix_vechr(S.est.mat)
-    
     p.old <- p.est
     p.est <- c(mu.est,S.est)
     

@@ -25,15 +25,28 @@ BEGIN_RCPP
 END_RCPP
 }
 // imp2matsigma
-void imp2matsigma(const arma::mat d, const arma::mat sigest, arma::mat t2);
-RcppExport SEXP _EMgaussian_imp2matsigma(SEXP dSEXP, SEXP sigestSEXP, SEXP t2SEXP) {
+void imp2matsigma(Rcpp::NumericMatrix D, const arma::mat sigest, arma::mat t2);
+RcppExport SEXP _EMgaussian_imp2matsigma(SEXP DSEXP, SEXP sigestSEXP, SEXP t2SEXP) {
 BEGIN_RCPP
     Rcpp::RNGScope rcpp_rngScope_gen;
-    Rcpp::traits::input_parameter< const arma::mat >::type d(dSEXP);
+    Rcpp::traits::input_parameter< Rcpp::NumericMatrix >::type D(DSEXP);
     Rcpp::traits::input_parameter< const arma::mat >::type sigest(sigestSEXP);
     Rcpp::traits::input_parameter< arma::mat >::type t2(t2SEXP);
-    imp2matsigma(d, sigest, t2);
+    imp2matsigma(D, sigest, t2);
     return R_NilValue;
+END_RCPP
+}
+// EMcyclecov
+Rcpp::List EMcyclecov(const Rcpp::NumericMatrix D, const arma::colvec muest, const arma::mat sigest);
+RcppExport SEXP _EMgaussian_EMcyclecov(SEXP DSEXP, SEXP muestSEXP, SEXP sigestSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< const Rcpp::NumericMatrix >::type D(DSEXP);
+    Rcpp::traits::input_parameter< const arma::colvec >::type muest(muestSEXP);
+    Rcpp::traits::input_parameter< const arma::mat >::type sigest(sigestSEXP);
+    rcpp_result_gen = Rcpp::wrap(EMcyclecov(D, muest, sigest));
+    return rcpp_result_gen;
 END_RCPP
 }
 // nllcov
@@ -93,6 +106,7 @@ END_RCPP
 static const R_CallMethodDef CallEntries[] = {
     {"_EMgaussian_imp1matsigma", (DL_FUNC) &_EMgaussian_imp1matsigma, 3},
     {"_EMgaussian_imp2matsigma", (DL_FUNC) &_EMgaussian_imp2matsigma, 3},
+    {"_EMgaussian_EMcyclecov", (DL_FUNC) &_EMgaussian_EMcyclecov, 3},
     {"_EMgaussian_nllcov", (DL_FUNC) &_EMgaussian_nllcov, 4},
     {"_EMgaussian_imp1mat", (DL_FUNC) &_EMgaussian_imp1mat, 3},
     {"_EMgaussian_imp2mat", (DL_FUNC) &_EMgaussian_imp2mat, 3},

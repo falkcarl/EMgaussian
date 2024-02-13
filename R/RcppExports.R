@@ -5,8 +5,12 @@ imp1matsigma <- function(D, muest, sigest) {
     .Call('_EMgaussian_imp1matsigma', PACKAGE = 'EMgaussian', D, muest, sigest)
 }
 
-imp2matsigma <- function(d, sigest, t2) {
-    invisible(.Call('_EMgaussian_imp2matsigma', PACKAGE = 'EMgaussian', d, sigest, t2))
+imp2matsigma <- function(D, sigest, t2) {
+    invisible(.Call('_EMgaussian_imp2matsigma', PACKAGE = 'EMgaussian', D, sigest, t2))
+}
+
+EMcyclecov <- function(D, muest, sigest) {
+    .Call('_EMgaussian_EMcyclecov', PACKAGE = 'EMgaussian', D, muest, sigest)
 }
 
 nllcov <- function(d, muest, sigest, np) {
