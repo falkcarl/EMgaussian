@@ -79,14 +79,7 @@ em.prec <- function(dat, max.iter = 500, tol=1e-5, start=c("diag","pairwise","li
 
   pkstart.sb<-c(mustart.sb,Kstart.sb)
   p.est<-pkstart.sb
-  
-  ones <- as.matrix(rep(1,nrow(dat)))
-  
-  # Estep
-  # Is this just the same as described in section 2.3
-  # Conditional expectation for just xji is the same!
-  N<-nrow(dat)
-  
+
   # loop until convergence
   conv<-FALSE
   for(it in 1:max.iter){
@@ -94,42 +87,26 @@ em.prec <- function(dat, max.iter = 500, tol=1e-5, start=c("diag","pairwise","li
       print(paste0('iter ',it))
     }
 
-    d.imp<-imp1mat(dat,mu.est,K.est.mat) # here, K.est.mat is used instead of S.est.mat
-
-    T1 <- t(d.imp)%*%ones
+    # Do one EM cycle
+    EMres <- EMcycleprec(dat, mu.est, K.est.mat)
+    mu.est <- EMres$mu
+    S.est.mat <- EMres$S
     
-    # What about for E[xijxij']?
-    # It looks like the imputations can be used directly, except for cases where both values are missing.
-    # We need to add K^m whatever.
-    # 1. Just do cross product with imputed dataset
-    T2 <- t(d.imp)%*%d.imp
-
-    # 2. Then, add stuff to T2. Can loop over individuals
-    imp2mat(dat,K.est.mat,T2) # again here
-
-    # Now, compute mu
-    mu.est <- T1/N
-    
-    # update S, then feed to glasso
-    S<- (1/N)*T2 - mu.est%*%t(mu.est)
-    
-    if(!is.symmetric.matrix(S)){
-      S<-as.matrix(forceSymmetric(S))
+    # Check S
+    if(!is.symmetric.matrix(S.est.mat)){
+      S.est.mat<-as.matrix(forceSymmetric(S.est.mat))
       warnings("Non-symmetric S found after E step. Could indicate identification or estimation problem.")
     }
     
     # force positive-definite S
-    if(!is.positive.definite(S)){
-      S<-as.matrix(nearPD(S)$mat)
+    if(!is.positive.definite(S.est.mat)){
+      S.est.mat<-as.matrix(nearPD(S.est.mat)$mat)
       warnings("Non-positive definite S found after E step. Could indicate identification or estimation problem.")
-      
     }
 
-    K.est.mat <- solve(S)
+    # Save estimates
+    K.est.mat <- solve(S.est.mat)
     K.est <- lav_matrix_vechr(K.est.mat)
-    
-    S.est.mat <- S
-
     p.old <- p.est
     p.est <- c(mu.est,K.est)
     

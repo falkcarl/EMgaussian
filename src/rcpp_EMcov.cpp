@@ -6,7 +6,7 @@
 
 // First part of E step for an entire data matrix
 // [[Rcpp::export]]
-arma::mat imp1matsigma(Rcpp::NumericMatrix D, const arma::colvec muest, const arma::mat sigest){  
+arma::mat imp1matcov(Rcpp::NumericMatrix D, const arma::colvec muest, const arma::mat sigest){  
 
   arma::mat d(D.begin(), D.rows(), D.cols(), true); // I think false means no copy; here we want one to avoid replacing original data
   
@@ -29,13 +29,12 @@ arma::mat imp1matsigma(Rcpp::NumericMatrix D, const arma::colvec muest, const ar
 // Second part of E step for an entire data matrix
 // operates directly on T2 to avoid making a copy
 // [[Rcpp::export]]
-void imp2matsigma(Rcpp::NumericMatrix D, const arma::mat sigest, arma::mat t2){
+void imp2matcov(Rcpp::NumericMatrix D, const arma::mat sigest, arma::mat t2){
 
   arma::mat d(D.begin(), D.rows(), D.cols(), true);
   
   int N = d.n_rows;
 
-  //arma::mat t2(T2.begin(), T2.rows(), T2.cols(), false);
   arma::mat siginv = inv(sigest);
   
   for(int i = 0; i<N; i++){
@@ -45,12 +44,12 @@ void imp2matsigma(Rcpp::NumericMatrix D, const arma::mat sigest, arma::mat t2){
 
 }
 
-// Try to do EM algorithm all in one shot
+// EM cycle all in one shot, covariance matrix parameterization
 // [[Rcpp::export]]
 Rcpp::List EMcyclecov(const Rcpp::NumericMatrix D, const arma::colvec muest, const arma::mat sigest){
   
   // First part of imputation
-  arma::mat dimp = imp1matsigma(D, muest, sigest);
+  arma::mat dimp = imp1matcov(D, muest, sigest);
   //d.imp<-imp1matsigma(dat,mu.est,S.est.mat)
 
   int N = dimp.n_rows;
@@ -67,7 +66,7 @@ Rcpp::List EMcyclecov(const Rcpp::NumericMatrix D, const arma::colvec muest, con
   //T2 <- t(d.imp)%*%d.imp
   
   // Then, add stuff to T2
-  imp2matsigma(D, sigest, t2);
+  imp2matcov(D, sigest, t2);
   //imp2matsigma(dat,S.est.mat,T2)
   
   // Now, compute mu
@@ -80,11 +79,11 @@ Rcpp::List EMcyclecov(const Rcpp::NumericMatrix D, const arma::colvec muest, con
   
   Rcpp::List out;
   out["mu"] = newmu;
-  out["dimp"] = dimp;
+  //out["dimp"] = dimp;
   out["S"] = newS;
-  out["t1"] = t1;
-  out["t2"] = t2;
-  out["ones"] = ones;
+  //out["t1"] = t1;
+  //out["t2"] = t2;
+  //out["ones"] = ones;
 
   return out;
 }
