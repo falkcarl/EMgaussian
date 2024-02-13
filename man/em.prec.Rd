@@ -2,7 +2,7 @@
 % Please edit documentation in R/emprec.R
 \name{em.prec}
 \alias{em.prec}
-\title{EM algorithm originally in Stadler & Buhlmann (2012)}
+\title{EM algorithm for multivariate normal, precision matrix parameterization}
 \usage{
 em.prec(
   dat,
@@ -14,23 +14,46 @@ em.prec(
 )
 }
 \arguments{
-\item{dat}{blah}
+\item{dat}{Data frame or matrix that contains the raw data.}
 
-\item{max.iter}{blah}
+\item{max.iter}{Max number of EM cycles.}
 
-\item{tol}{blah}
+\item{tol}{Tolerance for change in parameter estimates across EM Cycles. If
+all changes are less than \code{tol}, the algorithm terminates.}
 
-\item{start}{blah}
+\item{start}{Starting value method (see details).}
 
-\item{debug}{blah}
+\item{debug}{(Experimental) set an integer value > 1 for some information as the algorithm runs.}
 
-\item{...}{blah}
+\item{...}{Space for additional arguments, not currently used.}
+}
+\value{
+A list with the following:
+\itemize{
+ \item{\code{p.est}: all parameter estimates as a vector (means followed by unique elements of precision matrix).}
+ \item{\code{mu}: estimated means.}
+ \item{\code{S}: estimated covariance matrix.}
+ \item{\code{K}: estimated precision matrix.}
+ \item{\code{it}: number of EM cycles completed.}
+ \item{\code{conv}: boolean value indicating convergence (TRUE) or not (FALSE).}
+}
 }
 \description{
-EM algorithm originally in Stadler & Buhlmann (2012)
+EM algorithm for multivariate normal, precision matrix parameterization
 }
 \details{
-Additional details...
+This function computes all means and the precision matrix (inverse of covariance
+matrix) among a set of variables using the Expectation-Maximization (EM)
+algorithm to handle missing values, and assuming multivariate normality. The
+EM code was originally developed based on Stadler and Buhlmann (2012) and for
+use with the graphical lasso (i.e., glasso). This version does not contain
+the lasso part.
+
+For starting values, the function accepts either a list that has \code{mu} and
+\code{S} slots corresponding to the starting mean and covariance matrix. This
+is useful if the user would like to use custom starting values. Otherwise, a
+character corresponding to any of the options available in the
+\code{\link{startvals.cov}} function will be used to take a guess at starting values.
 }
 \examples{
 \dontrun{

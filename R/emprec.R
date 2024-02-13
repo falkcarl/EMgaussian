@@ -13,21 +13,45 @@
 ## GNU General Public License for more details.
 ## <http://www.gnu.org/licenses/>
 
-#' EM algorithm originally in Stadler & Buhlmann (2012)
+#' EM algorithm for multivariate normal, precision matrix parameterization
 #' 
-#' @param dat blah
-#' @param max.iter blah
-#' @param tol blah
-#' @param start blah
-#' @param debug blah
-#' @param ... blah
+#' @param dat Data frame or matrix that contains the raw data.
+#' @param max.iter Max number of EM cycles.
+#' @param tol Tolerance for change in parameter estimates across EM Cycles. If
+#'   all changes are less than \code{tol}, the algorithm terminates.
+#' @param start Starting value method (see details).
+#' @param debug (Experimental) set an integer value > 1 for some information as the algorithm runs.
+#' @param ... Space for additional arguments, not currently used.
 #' @details
-#' Additional details...
+#' This function computes all means and the precision matrix (inverse of covariance
+#' matrix) among a set of variables using the Expectation-Maximization (EM)
+#' algorithm to handle missing values, and assuming multivariate normality. The
+#' EM code was originally developed based on Stadler and Buhlmann (2012) and for
+#' use with the graphical lasso (i.e., glasso). This version does not contain
+#' the lasso part.
+#' 
+#' For starting values, the function accepts either a list that has \code{mu} and
+#' \code{S} slots corresponding to the starting mean and covariance matrix. This
+#' is useful if the user would like to use custom starting values. Otherwise, a
+#' character corresponding to any of the options available in the
+#' \code{\link{startvals.cov}} function will be used to take a guess at starting values.
+#' 
+#' @return 
+#' A list with the following:
+#' \itemize{
+#'  \item{\code{p.est}: all parameter estimates as a vector (means followed by unique elements of precision matrix).}
+#'  \item{\code{mu}: estimated means.}
+#'  \item{\code{S}: estimated covariance matrix.}
+#'  \item{\code{K}: estimated precision matrix.}
+#'  \item{\code{it}: number of EM cycles completed.}
+#'  \item{\code{conv}: boolean value indicating convergence (TRUE) or not (FALSE).}
+#' }
+#' 
 #' @importFrom stats cov
-#' @importFrom lavaan lavCor lav_matrix_vechr lav_matrix_vechr_reverse
+#' @importFrom lavaan lav_matrix_vechr lav_matrix_vechr_reverse
 #' @importFrom matrixcalc is.positive.definite is.symmetric.matrix
 #' @importFrom Matrix nearPD forceSymmetric
-#' @importFrom Rcpp evalCpp 
+#' @importFrom Rcpp evalCpp
 #' @useDynLib EMgaussian 
 #' @export
 #' @examples
@@ -43,42 +67,28 @@
 em.prec <- function(dat, max.iter = 500, tol=1e-5, start=c("diag","pairwise","listwise","full"), debug=0,
                      ...){
   
-  start <- match.arg(start)
-
   dat <- as.matrix(dat)
   
-  # obtain starting values: note that lavaan is kind of cheating
-  mustart.sb <- colMeans(dat,na.rm=T)
-  if(start=="listwise"){
-    covstart.sb <- cov(dat, use="complete.obs")
-  } else if (start=="pairwise"){
-    covstart.sb <- cov(dat,use="pairwise.complete.obs")
-  } else if (start=="full"){
-    covstart.sb <- lavCor(as.data.frame(dat), missing="ml", output="cov")
-  } else if (start=="diag"){
-    covstart.sb <- diag(diag(cov(dat,use="pairwise.complete.obs")))
-  }
-  
-  if(any(is.na(covstart.sb))){
-    covstart.sb[is.na(covstart.sb)]<-0
-    warning("Some NAs in starting vals for covariance matrix. Replacing with zeros.")
-  }
-  
-  # force positive-definite covstart.sb
-  if(!is.positive.definite(covstart.sb)){
-    covstart.sb<-as.matrix(nearPD(covstart.sb)$mat)
+  # obtain starting values  
+  if(is.list(start) && is.vector(start$mustart) && is.matrix(start$covstart)){
+    mustart <- start$mustart
+    covstart <- start$covstart
+  } else if (is.character(start)) {
+    start <- startvals.cov(dat, start)
+    mustart <- start$mustart
+    covstart <- start$covstart
   }
 
-  Kstart.sb.mat<-solve(covstart.sb)
-  Kstart.sb <- lav_matrix_vechr(Kstart.sb.mat)
+  Kstart.mat<-solve(covstart)
+  Kstart <- lav_matrix_vechr(Kstart.mat)
   
-  mu.est <- as.matrix(mustart.sb)
+  mu.est <- as.matrix(mustart)
   
-  K.est <- Kstart.sb
+  K.est <- Kstart
   K.est.mat <- lav_matrix_vechr_reverse(K.est)
 
-  pkstart.sb<-c(mustart.sb,Kstart.sb)
-  p.est<-pkstart.sb
+  pkstart<-c(mustart,Kstart)
+  p.est<-pkstart
 
   # loop until convergence
   conv<-FALSE

@@ -2,6 +2,7 @@
 
 export(em.cov)
 export(em.prec)
+export(startvals.cov)
 importFrom(Matrix,forceSymmetric)
 importFrom(Matrix,nearPD)
 importFrom(Rcpp,evalCpp)

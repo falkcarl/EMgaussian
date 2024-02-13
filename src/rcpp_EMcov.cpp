@@ -50,7 +50,6 @@ Rcpp::List EMcyclecov(const Rcpp::NumericMatrix D, const arma::colvec muest, con
   
   // First part of imputation
   arma::mat dimp = imp1matcov(D, muest, sigest);
-  //d.imp<-imp1matsigma(dat,mu.est,S.est.mat)
 
   int N = dimp.n_rows;
   
@@ -59,31 +58,22 @@ Rcpp::List EMcyclecov(const Rcpp::NumericMatrix D, const arma::colvec muest, con
   
   // Compute T1 matrix
   arma::mat t1 = dimp.t() * ones;
-  //  T1 <- t(d.imp)%*%ones  
 
   // Compute T2 matrix, then add stuff to T2
   arma::mat t2 = dimp.t() * dimp;
-  //T2 <- t(d.imp)%*%d.imp
-  
+
   // Then, add stuff to T2
   imp2matcov(D, sigest, t2);
-  //imp2matsigma(dat,S.est.mat,T2)
-  
+
   // Now, compute mu
   arma::colvec newmu = t1/N;
-  //  mu.est <- T1/N
-  //
+
+  // update S
   arma::mat newS = t2/N - newmu*newmu.t();
-  // update S, then feed to glasso
-  //  S<- (1/N)*T2 - mu.est%*%t(mu.est)
-  
+
   Rcpp::List out;
   out["mu"] = newmu;
-  //out["dimp"] = dimp;
   out["S"] = newS;
-  //out["t1"] = t1;
-  //out["t2"] = t2;
-  //out["ones"] = ones;
 
   return out;
 }
