@@ -76,7 +76,7 @@ Rcpp::List EMcycleprec(const Rcpp::NumericMatrix& D, const arma::colvec& muest, 
         
 // Negative log-likelihood; precision matrix parameterization
 // [[Rcpp::export]]
-double nllprec(const arma::mat d, const arma::colvec muest, const arma::mat kest, int np){
+double nllprec(const arma::mat d, const arma::colvec muest, const arma::mat kest){
     
     int N = d.n_rows;
     int J = d.n_cols;

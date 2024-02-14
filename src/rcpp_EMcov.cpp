@@ -80,7 +80,7 @@ Rcpp::List EMcyclecov(const Rcpp::NumericMatrix& D, const arma::colvec& muest, c
 
 // Negative log-likelihood; covariance matrix parameterization
 // [[Rcpp::export]]
-double nllcov(const arma::mat d, const arma::colvec muest, const arma::mat sigest, int np){
+double nllcov(const arma::mat d, const arma::colvec muest, const arma::mat sigest){
   
   int N = d.n_rows;
   int J = d.n_cols;

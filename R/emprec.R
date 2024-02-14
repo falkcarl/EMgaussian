@@ -20,21 +20,33 @@
 #' @param tol Tolerance for change in parameter estimates across EM Cycles. If
 #'   all changes are less than \code{tol}, the algorithm terminates.
 #' @param start Starting value method (see details).
+#' @param glassoversion Character indicating whether to do regularization (lasso),
+#'   and if so, using which package. "glasso" uses the \code{\link[glasso]{glasso}}
+#'   function and uses the E-step covariance matrix for starting values,
+#'   "glassoFast" uses \code{\link{glassoFast}{glassoFast}} which also
+#'   penalizes the diagonal of the precision matrix by default (glasso does not),
+#'   "glassonostart" also uses \code{\link[glasso]{glasso}} but no "warm" starting
+#'   values.
 #' @param debug (Experimental) set an integer value > 1 for some information as the algorithm runs.
-#' @param ... Space for additional arguments, not currently used.
+#' @param ... Arguments passed down to any of the glasso functions.
 #' @details
 #' This function computes all means and the precision matrix (inverse of covariance
 #' matrix) among a set of variables using the Expectation-Maximization (EM)
 #' algorithm to handle missing values, and assuming multivariate normality. The
 #' EM code was originally developed based on Stadler and Buhlmann (2012) and for
-#' use with the graphical lasso (i.e., glasso). This version does not contain
-#' the lasso part.
+#' use with the graphical lasso (i.e., glasso). This version allows the possibility
+#' of using a lasso by specifying something other than "none" for \code{glassoversion}.
+#' However, it can also be used without regularization to just estimate the precision matrix.
 #' 
-#' For starting values, the function accepts either a list that has \code{mu} and
-#' \code{S} slots corresponding to the starting mean and covariance matrix. This
-#' is useful if the user would like to use custom starting values. Otherwise, a
-#' character corresponding to any of the options available in the
-#' \code{\link{startvals.cov}} function will be used to take a guess at starting values.
+#' For starting values for the EM algorithm itself (not at the M-step), the
+#' function accepts either a list that has \code{mu} and \code{S} slots
+#' corresponding to the starting mean and covariance matrix. This is useful if
+#' the user would like to use custom starting values. Otherwise, a character
+#' corresponding to any of the options available in the \code{\link{startvals.cov}}
+#' function will be used to take a guess at starting values.
+#' 
+#' @references Städler, N., & Bühlmann, P. (2012). Missing values: sparse inverse covariance estimation and an
+#'   extension to sparse regression. Statistics and Computing, 22, 219–235. doi:10.1007/s11222-010-9219-7
 #' 
 #' @return 
 #' A list with the following:
@@ -51,8 +63,10 @@
 #' @importFrom lavaan lav_matrix_vechr lav_matrix_vechr_reverse
 #' @importFrom matrixcalc is.positive.definite is.symmetric.matrix
 #' @importFrom Matrix nearPD forceSymmetric
+#' @importFrom glasso glasso
+#' @importFrom glassoFast glassoFast
 #' @importFrom Rcpp evalCpp
-#' @useDynLib EMgaussian 
+#' @useDynLib EMgaussian
 #' @export
 #' @examples
 #' \dontrun{
@@ -61,13 +75,17 @@
 #'   test <- em.prec(bfi[,1:25])
 #' }
 ##########################################################################################
-# EM algorithm originally in Stadler & Buhlmann (2012), which is on missing data w/ Gaussian graphical model
+# Städler, N., & Bühlmann, P. (2012). Missing values: sparse inverse covariance estimation and an extension to sparse regression.Statistics and Computing,22, 219–235.  doi:10.1007/s11222-010-9219-7
 # Try implementing their algorithm. Section 2.3.2
-# Just remove the glasso part and we have a saturated mean and covariance matrix
-em.prec <- function(dat, max.iter = 500, tol=1e-5, start=c("diag","pairwise","listwise","full"), debug=0,
+# Note that setting the glasso method to "none" results in no regularization
+em.prec <- function(dat, max.iter = 500, tol=1e-5, start=c("diag","pairwise","listwise","full"),
+                    glassoversion = c("none","glassoFast","glasso","glassonostart"),
+                    debug=0,
                      ...){
   
   dat <- as.matrix(dat)
+  N <- nrow(dat)
+  glassoversion <- match.arg(glassoversion)
   
   # obtain starting values  
   if(is.list(start) && is.vector(start$mustart) && is.matrix(start$covstart)){
@@ -113,9 +131,19 @@ em.prec <- function(dat, max.iter = 500, tol=1e-5, start=c("diag","pairwise","li
       S.est.mat<-as.matrix(nearPD(S.est.mat)$mat)
       warnings("Non-positive definite S found after E step. Could indicate identification or estimation problem.")
     }
-
+    
+    if(glassoversion=="glasso"){
+      gres <- glasso(S.est.mat, nobs=N, w.init=S.est.mat, wi.init=solve(S.est.mat), start="warm",...)
+    } else if (glassoversion=="glassoFast"){
+      gres <- glassoFast(S.est.mat, w.init=S.est.mat, wi.init=solve(S.est.mat), start="warm",...)
+    } else if (glassoversion=="glassonostart"){
+      gres <- glasso(S.est.mat, nobs=N, ...)
+    } else if (glassoversion=="none"){
+      gres <- list(wi = solve(S.est.mat))
+    }
+    
     # Save estimates
-    K.est.mat <- solve(S.est.mat)
+    K.est.mat <- K.est.mat <- gres$wi #solve(S.est.mat)
     K.est <- lav_matrix_vechr(K.est.mat)
     p.old <- p.est
     p.est <- c(mu.est,K.est)

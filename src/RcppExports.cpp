@@ -50,16 +50,15 @@ BEGIN_RCPP
 END_RCPP
 }
 // nllcov
-double nllcov(const arma::mat d, const arma::colvec muest, const arma::mat sigest, int np);
-RcppExport SEXP _EMgaussian_nllcov(SEXP dSEXP, SEXP muestSEXP, SEXP sigestSEXP, SEXP npSEXP) {
+double nllcov(const arma::mat d, const arma::colvec muest, const arma::mat sigest);
+RcppExport SEXP _EMgaussian_nllcov(SEXP dSEXP, SEXP muestSEXP, SEXP sigestSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
     Rcpp::traits::input_parameter< const arma::mat >::type d(dSEXP);
     Rcpp::traits::input_parameter< const arma::colvec >::type muest(muestSEXP);
     Rcpp::traits::input_parameter< const arma::mat >::type sigest(sigestSEXP);
-    Rcpp::traits::input_parameter< int >::type np(npSEXP);
-    rcpp_result_gen = Rcpp::wrap(nllcov(d, muest, sigest, np));
+    rcpp_result_gen = Rcpp::wrap(nllcov(d, muest, sigest));
     return rcpp_result_gen;
 END_RCPP
 }
@@ -102,16 +101,15 @@ BEGIN_RCPP
 END_RCPP
 }
 // nllprec
-double nllprec(const arma::mat d, const arma::colvec muest, const arma::mat kest, int np);
-RcppExport SEXP _EMgaussian_nllprec(SEXP dSEXP, SEXP muestSEXP, SEXP kestSEXP, SEXP npSEXP) {
+double nllprec(const arma::mat d, const arma::colvec muest, const arma::mat kest);
+RcppExport SEXP _EMgaussian_nllprec(SEXP dSEXP, SEXP muestSEXP, SEXP kestSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
     Rcpp::traits::input_parameter< const arma::mat >::type d(dSEXP);
     Rcpp::traits::input_parameter< const arma::colvec >::type muest(muestSEXP);
     Rcpp::traits::input_parameter< const arma::mat >::type kest(kestSEXP);
-    Rcpp::traits::input_parameter< int >::type np(npSEXP);
-    rcpp_result_gen = Rcpp::wrap(nllprec(d, muest, kest, np));
+    rcpp_result_gen = Rcpp::wrap(nllprec(d, muest, kest));
     return rcpp_result_gen;
 END_RCPP
 }
@@ -120,11 +118,11 @@ static const R_CallMethodDef CallEntries[] = {
     {"_EMgaussian_imp1matcov", (DL_FUNC) &_EMgaussian_imp1matcov, 3},
     {"_EMgaussian_imp2matcov", (DL_FUNC) &_EMgaussian_imp2matcov, 3},
     {"_EMgaussian_EMcyclecov", (DL_FUNC) &_EMgaussian_EMcyclecov, 3},
-    {"_EMgaussian_nllcov", (DL_FUNC) &_EMgaussian_nllcov, 4},
+    {"_EMgaussian_nllcov", (DL_FUNC) &_EMgaussian_nllcov, 3},
     {"_EMgaussian_imp1matprec", (DL_FUNC) &_EMgaussian_imp1matprec, 3},
     {"_EMgaussian_imp2matprec", (DL_FUNC) &_EMgaussian_imp2matprec, 3},
     {"_EMgaussian_EMcycleprec", (DL_FUNC) &_EMgaussian_EMcycleprec, 3},
-    {"_EMgaussian_nllprec", (DL_FUNC) &_EMgaussian_nllprec, 4},
+    {"_EMgaussian_nllprec", (DL_FUNC) &_EMgaussian_nllprec, 3},
     {NULL, NULL, 0}
 };
 
