@@ -3,6 +3,7 @@
 export(EMggm)
 export(em.cov)
 export(em.prec)
+export(rhogrid)
 export(startvals.cov)
 importFrom(Matrix,forceSymmetric)
 importFrom(Matrix,nearPD)

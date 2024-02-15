@@ -1,6 +1,6 @@
 ######################################################################
-## Functions for estimating regularized network models
-## Missing data.
+## Functions for estimating regularized network models with
+## missing data.
 ##
 ## Copyright 2019-2024 Carl F. Falk
 ##
@@ -15,12 +15,15 @@
 ## GNU General Public License for more details.
 ## <http://www.gnu.org/licenses/>
 
-## A couple of lines regarding computing pairwise counts are similar
+## Some lines regarding computing pairwise counts are similar
 ## to those in bootnet (https://cran.r-project.org/package=bootnet) e.g., V. 1.5.1
 ## which is authored by Sacha Epskamp and Eiko Fried under GPL-2
 ## Those lines are acknowledged below (search for bootnet)
 ##
-## Some code in the examples for selecting tuning parameter grid is from qgraph, the EBICglassoCore function.
+## Some code regarding creating the grid for the tuning parameter is from qgraph
+## (https://cran.r-project.org/package=qgraph) or glasso
+## (https://cran.r-project.org/package=glasso)
+## Both were also released under GPL-2. Refer to the rhogrid function.
 
 ##########################################################################################
 
@@ -55,6 +58,7 @@
 #' 
 #' For the tuning parameter (\code{rho}), typically a grid of of values is evaluated and the one
 #' that results in the best EBIC or cross validation metric is selected and returned as the final model.
+#' See \code{\link{rhogrid}} and examples for some ways to pick these candidate tuning parameter values.
 #' 
 #' This function is intended to be compatible (to my knowledge) with \code{\link[bootnet]{estimateNetwork}}
 #' in the \code{bootnet} package in that one can input this as a custom function and then have all of the
@@ -106,7 +110,10 @@
 #' @return A list with the following elements:
 #' 
 #' \itemize{
-#'  \item{\code{results}: Contains the "best" or selected model, with elements following that of \code{\link{em.prec}}'s output.}
+#'  \item{\code{results}: Contains the "best" or selected model, with elements mostly following that of \code{\link{em.prec}}'s output.
+#'    Additional elements include \code{rho} and \code{crit}, which are the grid of tuning parameter values and value of the
+#'    criterion. These are added here because if used with \code{\link[bootnet]{bootnet}}, it may not save the other slots below.}
+#'  \item{\code{rho}: Grid for \code{rho}.}    
 #'  \item{\code{crit}: Vector of the same length as the grid for \code{rho} with the criterion (EBIC or cross-validation).
 #'    Smaller is better.}
 #'  \item{\code{graph}: Estimated partial correlation matrix; \code{\link[bootnet]{bootnet}} appears to expect this in order
@@ -122,8 +129,6 @@
 #'   data(bfi)
 #'
 #'   # Regularized estimation with just a couple of tuning parameter values
-#'   # TODO: maybe we ought to return rho and the values of the criterion;
-#'   # Here and when using integration with bootnet
 #'   
 #'   # EBIC
 #'   rho <- seq(.01,.5,length.out = 50)
@@ -157,31 +162,26 @@
 #'   centralityPlot(ebic2)
 #'   # and so on
 #'
-#'   # Other ways to pick grid for tuning parameter...
-#'   # This could be automated in a helper function
-#'   # TODO: do we need to rescale rho?
-#'   
-#'   # estimate saturated covariance matrix using EM algorithm
-#'   sat <- em.cov(bfi[,1:25])
-#'   
-#'   # This is basically from qgraph, EBICglassoCore function
-#'   nrho <- 100
-#'   rho.min.ratio = .1
-#'   rho.max = max(max(sat$S - diag(nrow(sat$S))), -min(sat$S - diag(nrow(sat$S))))
-#'   rho.min = rho.min.ratio * rho.max
-#'   rho = exp(seq(log(rho.min), log(rho.max), length = nrho))
+#'   # Other ways to pick grid for tuning parameter... 100 values using method
+#'   # that qgraph basically uses; requires estimate of covariance matrix. Here
+#'   # the covariance matrix is obtained directly from the data.
+#'   rho <- rhogrid(100, method="qgraph", dat = bfi[,1:25])
 #'  
 #'   ebic3 <- estimateNetwork(bfi[,1:25], fun = EMggm, rho=rho,
 #'                            glassoversion = "glasso", rhoselect = "ebic")
 #'   kfold3 <- estimateNetwork(bfi[,1:25], fun = EMggm, rho=rho,
 #'                            glassoversion = "glasso", rhoselect = "kfold")  
 #'   
+#'   # look at tuning parameter values vs criterion
+#'   plot(ebic3$result$rho, ebic3$result$crit)
+#'   plot(kfold3$result$rho, kfold3$result$crit)
+#'   
 #'   # EBIC with bootnet; does listwise deletion by default
 #'   ebic.listwise <- estimateNetwork(bfi[,1:25], default="EBICglasso")
 #'   
 #'   # EBIC with bootnet; two-stage estimation
-#'   # Note the constant added to bfi tricks lavaan into thinking data are not
-#'   # categorical
+#'   # Note the constant added to bfi tricks lavaan into thinking the data are
+#'   # not categorical
 #'   ebic.ts <- estimateNetwork(bfi[,1:25] + 1e-10, default="EBICglasso",
 #'                              corMethod="cor_auto", missing="fiml")
 #'   
@@ -252,6 +252,9 @@ EMggm<-function(dat,
   
   out<-list()
   out$results <- best.mod
+  out$results$rho <- rho
+  out$results$crit <- crit
+  out$rho <- rho
   out$crit <- crit
   
   pcor.net <- -cov2cor(best.mod$K)
@@ -356,4 +359,89 @@ EBICggm <- function(p, dat, N=NULL, gam=.5, tol=1e-32){
   
   return(out)
   
+}
+
+#' Create sequence of possible tuning parameter values
+#' 
+#' @param n.rho Integer corresponding to the number of tuning parameter values.
+#' @param method Character corresponding to the method to create tuning parameter values ("qgraph" or "glassopath"); see Details.
+#' @param rho.min.ratio Numeric value that mimics \code{\link[qgraph]{EBICglasso}} behavior for tuning parameter.
+#'   i.e., "Ratio of lowest (tuning parameter) compared to maximal (tuning parameter)".
+#' @param dat The raw data, if \code{S} is not provided used to estimate \code{S}. Not required if \code{S} is provided.
+#' @param S Covariance matrix for the data. If provided, supersedes \code{dat}.
+#' @param ... Other arguments passed down to \code{\link{em.prec}}.
+#' @details
+#' For regularized estimation of the Gaussian graphical model, a sequence or grid of possible tuning
+#' parameter values is often tried, with the tuning parameter that optimizes some criterion (EBIC, k-fold
+#' cross validation) chosen. This is an attempt to automate some of the sequence creation. Code
+#' is borrowed from qgraph and glasso, acknowledged in references below. Both require some estimate
+#' of the covariance matrix in order to do regularization; if not provided, \code{\link{em.prec}} with
+#' default options is attempted.
+#' 
+#' For "qgraph" the max value is determined by the maximum absolute value of the
+#' difference between the covariance matrix and an identity matrix. The min is \code{rho.min.ratio}
+#' times the max value. A sequence that is equally spaced on a log scale is then constructed between
+#' these two values.
+#' 
+#' For "glassopath", the max value is the max absolute value of the covariance matrix. The min is
+#' the max divided by the number of desired tuning parameter values. A sequence that is equally spaced
+#' between these two values is then constructed.
+#' 
+#' @references
+#' qgraph:
+#' Epskamp, S., Cramer, A., Waldorp, L., Schmittmann, V. D., & Borsboom, D. (2012). qgraph: Network visualizations of relationships in psychometric data. Journal of Statistical Software, 48 (1), 1-18.
+#'	
+#' glasso (i.e., glassopath option):
+#' Friedman, J. H., Hastie, T., & Tibshirani, R. (2014). glasso: Graphical lasso estimation of gaussian graphical models.
+#'   Retrieved from https://CRAN.R-project.org/package=glasso
+#' 
+#' @return A vector of possible tuning parameter values.
+#' 
+#' @export
+#' @examples
+#' \dontrun{
+#' library(psych)
+#' data(bfi)
+#'
+#' # pick 50 values using the approach qgraph uses; give data as input 
+#' rho <- rhogrid(50, method="qgraph", dat = bfi[,1:25])
+#' 
+#' emresult <- em.cov(bfi[,1:25])
+#' S<-emresult$S
+#' 
+#' # pick 50 values using the approach glasso uses; give S as input
+#' rho2 <- rhogrid(50, method="glassopath", S = S)
+#' 
+#' }
+# Helper function to pick some values for rho
+rhogrid <- function(n.rho, method=c("qgraph","glassopath"), rho.min.ratio = .01,
+                    dat = NULL, S = NULL, ...){
+  
+  method <- match.arg(method)
+  
+  if(is.null(S) & is.null(dat)){
+    stop("Either provide raw data (dat) or some estimate of the covariance matrix (S)")
+  }
+  
+  if(is.null(S)){
+    # estimate saturated covariance matrix using EM algorithm
+    sat <- em.cov(dat, ...)
+    if(!sat$conv){
+      warning("Estimation of covariance matrix may not have converged.")
+    }
+    S <- sat$S
+  }
+  
+  if (method == "qgraph") {
+    # This is basically from qgraph, EBICglassoCore function
+    rho.max = max(max(S - diag(nrow(S))), -min(S - diag(nrow(S))))
+    rho.min = rho.min.ratio * rho.max
+    rho = exp(seq(log(rho.min), log(rho.max), length = n.rho))
+  } else if (method =="glassopath"){
+    # This is from the glasso package, glassopath function
+    rho = seq(max(abs(S))/n.rho, max(abs(S)), length = n.rho)
+  }
+
+  return(rho)
+
 }

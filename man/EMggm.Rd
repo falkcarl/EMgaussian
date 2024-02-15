@@ -63,7 +63,10 @@ be more or less replicable.}
 A list with the following elements:
 
 \itemize{
- \item{\code{results}: Contains the "best" or selected model, with elements following that of \code{\link{em.prec}}'s output.}
+ \item{\code{results}: Contains the "best" or selected model, with elements mostly following that of \code{\link{em.prec}}'s output.
+   Additional elements include \code{rho} and \code{crit}, which are the grid of tuning parameter values and value of the
+   criterion. These are added here because if used with \code{\link[bootnet]{bootnet}}, it may not save the other slots below.}
+ \item{\code{rho}: Grid for \code{rho}.}    
  \item{\code{crit}: Vector of the same length as the grid for \code{rho} with the criterion (EBIC or cross-validation).
    Smaller is better.}
  \item{\code{graph}: Estimated partial correlation matrix; \code{\link[bootnet]{bootnet}} appears to expect this in order
@@ -81,6 +84,7 @@ Städler & Bühlmann (2012). These authors also used k-fold cross validation, wh
 
 For the tuning parameter (\code{rho}), typically a grid of of values is evaluated and the one
 that results in the best EBIC or cross validation metric is selected and returned as the final model.
+See \code{\link{rhogrid}} and examples for some ways to pick these candidate tuning parameter values.
 
 This function is intended to be compatible (to my knowledge) with \code{\link[bootnet]{estimateNetwork}}
 in the \code{bootnet} package in that one can input this as a custom function and then have all of the
@@ -105,8 +109,6 @@ encounter estimation problems.
   data(bfi)
 
   # Regularized estimation with just a couple of tuning parameter values
-  # TODO: maybe we ought to return rho and the values of the criterion;
-  # Here and when using integration with bootnet
   
   # EBIC
   rho <- seq(.01,.5,length.out = 50)
@@ -140,31 +142,26 @@ encounter estimation problems.
   centralityPlot(ebic2)
   # and so on
 
-  # Other ways to pick grid for tuning parameter...
-  # This could be automated in a helper function
-  # TODO: do we need to rescale rho?
-  
-  # estimate saturated covariance matrix using EM algorithm
-  sat <- em.cov(bfi[,1:25])
-  
-  # This is basically from qgraph, EBICglassoCore function
-  nrho <- 100
-  rho.min.ratio = .1
-  rho.max = max(max(sat$S - diag(nrow(sat$S))), -min(sat$S - diag(nrow(sat$S))))
-  rho.min = rho.min.ratio * rho.max
-  rho = exp(seq(log(rho.min), log(rho.max), length = nrho))
+  # Other ways to pick grid for tuning parameter... 100 values using method
+  # that qgraph basically uses; requires estimate of covariance matrix. Here
+  # the covariance matrix is obtained directly from the data.
+  rho <- rhogrid(100, method="qgraph", dat = bfi[,1:25])
  
   ebic3 <- estimateNetwork(bfi[,1:25], fun = EMggm, rho=rho,
                            glassoversion = "glasso", rhoselect = "ebic")
   kfold3 <- estimateNetwork(bfi[,1:25], fun = EMggm, rho=rho,
                            glassoversion = "glasso", rhoselect = "kfold")  
   
+  # look at tuning parameter values vs criterion
+  plot(ebic3$result$rho, ebic3$result$crit)
+  plot(kfold3$result$rho, kfold3$result$crit)
+  
   # EBIC with bootnet; does listwise deletion by default
   ebic.listwise <- estimateNetwork(bfi[,1:25], default="EBICglasso")
   
   # EBIC with bootnet; two-stage estimation
-  # Note the constant added to bfi tricks lavaan into thinking data are not
-  # categorical
+  # Note the constant added to bfi tricks lavaan into thinking the data are
+  # not categorical
   ebic.ts <- estimateNetwork(bfi[,1:25] + 1e-10, default="EBICglasso",
                              corMethod="cor_auto", missing="fiml")
   
