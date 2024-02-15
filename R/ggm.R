@@ -14,16 +14,23 @@
 ## MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
 ## GNU General Public License for more details.
 ## <http://www.gnu.org/licenses/>
-
+##
+## Notice of other contributions:
+##
 ## Some lines regarding computing pairwise counts are similar
 ## to those in bootnet (https://cran.r-project.org/package=bootnet) e.g., V. 1.5.1
-## which is authored by Sacha Epskamp and Eiko Fried under GPL-2
-## Those lines are acknowledged below (search for bootnet)
+## Those lines are acknowledged below (search for bootnet).
 ##
 ## Some code regarding creating the grid for the tuning parameter is from qgraph
 ## (https://cran.r-project.org/package=qgraph) or glasso
 ## (https://cran.r-project.org/package=glasso)
-## Both were also released under GPL-2. Refer to the rhogrid function.
+## Refer to the rhogrid function.
+##
+## At the time this package was shared publicly, all other code was released under GPL-2:
+##  qgraph is Copyright (C) 2010 - 2019 Sacha Epskamp
+##  bootnet is authored by Sacha Epskamp and Eiko I. Fried
+##  glasso is authored by Jerome Friedman, Trevor Hastie and Rob Tibshirani
+##
 
 ##########################################################################################
 
