@@ -33,7 +33,7 @@ available cases. For covariances, several options are available:
 - "full" Cheat and use \code{lavaan} to obtain direct maximum likelihood estimates of covariances. This defeats the purpose to some extent, but not that \code{lavaan} may be quite slow compared to this implementation.
 }
 \examples{
-\dontrun{
+\donttest{
   library(psych)
   data(bfi)
   startvals.cov(bfi[,1:25])

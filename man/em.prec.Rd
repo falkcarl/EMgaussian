@@ -67,7 +67,7 @@ corresponding to any of the options available in the \code{\link{startvals.cov}}
 function will be used to take a guess at starting values.
 }
 \examples{
-\dontrun{
+\donttest{
   library(psych)
   data(bfi)
   test <- em.prec(bfi[,1:25])
@@ -75,5 +75,5 @@ function will be used to take a guess at starting values.
 }
 \references{
 Städler, N., & Bühlmann, P. (2012). Missing values: sparse inverse covariance estimation and an
-  extension to sparse regression. Statistics and Computing, 22, 219–235. doi:10.1007/s11222-010-9219-7
+  extension to sparse regression. Statistics and Computing, 22, 219–235. \doi{10.1007/s11222-010-9219-7}
 }

@@ -56,7 +56,7 @@ character corresponding to any of the options available in the
 \code{\link{startvals.cov}} function will be used to take a guess at starting values.
 }
 \examples{
-\dontrun{
+\donttest{
   library(psych)
   data(bfi)
   test <- em.cov(bfi[,1:25])

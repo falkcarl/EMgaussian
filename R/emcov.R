@@ -55,7 +55,7 @@
 #' @useDynLib EMgaussian
 #' @export
 #' @examples
-#' \dontrun{
+#' \donttest{
 #'   library(psych)
 #'   data(bfi)
 #'   test <- em.cov(bfi[,1:25])
@@ -156,7 +156,7 @@ em.cov <- function(dat, max.iter = 500, tol=1e-5, start=c("diag","pairwise","lis
 #' @importFrom Matrix nearPD
 #' @export
 #' @examples
-#' \dontrun{
+#' \donttest{
 #'   library(psych)
 #'   data(bfi)
 #'   startvals.cov(bfi[,1:25])

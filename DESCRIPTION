@@ -4,12 +4,16 @@ Type: Package
 Title: EM Algorithm for Multivariate Gaussian (Normal) with Missing Data
 Version: 0.2.1
 Date: 2024-02-15
-Author: Carl F. Falk
+Authors@R: 
+  c(person(given = c("Carl","F."),
+           family = "Falk",
+           role = c("cre","aut"),
+           email = "carl.falk@mcgill.ca"))
 Maintainer: Carl F. Falk <carl.falk@mcgill.ca>
 Description: Initially designed to distribute code for
   estimating the Gaussian graphical model with Lasso regularization, also known
-  as the graphical lasso (glasso), using an EM algorithm. The algorithm was
-  based on extant research in the literature (Städler and Bühlmann, 2012). As a
+  as the graphical lasso (glasso), using an EM algorithm basd on work by
+  Städler and Bühlmann (2012) <doi:10.1007/s11222-010-9219-7>. As a
   byproduct, code for estimating means and covariances (or the precision matrix)
   under a multivariate normal (Gaussian) distribution is also available.
 License: GPL (>= 3)
@@ -29,5 +33,4 @@ Suggests:
   cglasso
 LinkingTo: Rcpp, RcppArmadillo
 Config/testthat/edition: 3
-RoxygenNote: 7.2.3
-
+RoxygenNote: 7.3.1

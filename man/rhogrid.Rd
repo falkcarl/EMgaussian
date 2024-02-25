@@ -51,7 +51,7 @@ the max divided by the number of desired tuning parameter values. A sequence tha
 between these two values is then constructed.
 }
 \examples{
-\dontrun{
+\donttest{
 library(psych)
 data(bfi)
 
@@ -71,6 +71,6 @@ qgraph:
 Epskamp, S., Cramer, A., Waldorp, L., Schmittmann, V. D., & Borsboom, D. (2012). qgraph: Network visualizations of relationships in psychometric data. Journal of Statistical Software, 48 (1), 1-18.
 
 glasso (i.e., glassopath option):
-Friedman, J. H., Hastie, T., & Tibshirani, R. (2014). glasso: Graphical lasso estimation of gaussian graphical models.
+Friedman, J. H., Hastie, T., & Tibshirani, R. (2014). glasso: Graphical lasso estimation of Gaussian graphical models.
   Retrieved from https://CRAN.R-project.org/package=glasso
 }

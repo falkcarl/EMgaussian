@@ -103,7 +103,7 @@ simulations with a high proportion of missing data that our implementation was l
 encounter estimation problems.
 }
 \examples{
-\dontrun{
+\donttest{
   library(psych)
   library(bootnet)
   data(bfi)
@@ -170,15 +170,15 @@ encounter estimation problems.
 \references{
 Evidence that EBIC and k-fold works well with this package (cite if you use the EMglasso R package):
 Falk, C. F., & Starr, J. (2023, July 19). Regularized cross-sectional network modeling with missing data:
-  A comparison of methods. Preprint: https://doi.org/10.31219/osf.io/dk6zv
+  A comparison of methods. Preprint: \doi{doi.org/10.31219/osf.io/dk6zv}
 
 Original publication on use of EM algorithm and k-fold cross-validation for glasso:
 Städler, N., & Bühlmann, P. (2012). Missing values: sparse inverse covariance estimation and an
-  extension to sparse regression. Statistics and Computing,22, 219–235. doi:10.1007/s11222-010-9219-7
+  extension to sparse regression. Statistics and Computing,22, 219–235. \doi{10.1007/s11222-010-9219-7}
 
 If you use this package with bootnet:
 Epskamp,S., Borsboom, D., &  Fried, E. I. (2018). Estimating psychological networks and their accuracy:
-  A tutorial paper. Behavior research methods, 50(1), 195–212.  doi:10.3758/s13428-017-0862-1
+  A tutorial paper. Behavior research methods, 50(1), 195–212.  \doi{10.3758/s13428-017-0862-1}
 
 If you also use this package with qgraph:
 Epskamp, S., Cramer, A., Waldorp, L., Schmittmann, V. D., & Borsboom, D. (2012). qgraph: Network visualizations of relationships in psychometric data. Journal of Statistical Software, 48 (1), 1-18.
@@ -191,7 +191,7 @@ Foundational article on use of EBIC with glasso:
 Foygel, R., & Drton, M. (2010). Extended Bayesian information criteria for Gaussian graphical models.
 
 If glasso is also the estimation method:
-Friedman, J. H., Hastie, T., & Tibshirani, R. (2014). glasso: Graphical lasso estimation of gaussian graphical models.
+Friedman, J. H., Hastie, T., & Tibshirani, R. (2014). glasso: Graphical lasso estimation of Gaussian graphical models.
   Retrieved from https://CRAN.R-project.org/package=glasso
 
 If glassoFast is also the estimation method: 
