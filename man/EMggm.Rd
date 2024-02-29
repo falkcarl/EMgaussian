@@ -170,7 +170,7 @@ encounter estimation problems.
 \references{
 Evidence that EBIC and k-fold works well with this package (cite if you use the EMglasso R package):
 Falk, C. F., & Starr, J. (2023, July 19). Regularized cross-sectional network modeling with missing data:
-  A comparison of methods. Preprint: \doi{doi.org/10.31219/osf.io/dk6zv}
+  A comparison of methods. Preprint: \doi{10.31219/osf.io/dk6zv}
 
 Original publication on use of EM algorithm and k-fold cross-validation for glasso:
 Städler, N., & Bühlmann, P. (2012). Missing values: sparse inverse covariance estimation and an
