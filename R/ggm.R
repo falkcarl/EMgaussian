@@ -326,20 +326,6 @@ fiml.ggm.cv <- function(dat, rho,  max.iter = 500, est.tol = 1e-7, start=c("diag
   return(out)
 }
 
-#' @importFrom lavaan lav_matrix_vechr_reverse
-#' @useDynLib EMgaussian
-nllggm.wrap<-function(p, dat){
-  
-  ni <- ncol(dat)
-  np <- length(p)
-  mu <- p[1:ni]
-  K <- lav_matrix_vechr_reverse(p[(ni+1):np])
-  
-  nll <- nllprec(as.matrix(dat), mu, K)
-  return(nll)
-  
-}
-
 # EBIC
 #' @importFrom lavaan lav_matrix_vechr_reverse
 EBICggm <- function(p, dat, N=NULL, gam=.5, tol=1e-32){
