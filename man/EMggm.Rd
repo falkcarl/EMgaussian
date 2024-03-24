@@ -11,7 +11,7 @@ EMggm(
   start = c("diag", "pairwise", "listwise", "full"),
   glassoversion = c("glasso", "glassoFast", "glassonostart", "none"),
   rho = 0,
-  rhoselect = c("ebic", "kfold"),
+  rhoselect = c("ebic", "kfold", "bic", "aic"),
   N = NULL,
   gam = 0.5,
   zero.tol = 1e-10,

@@ -197,7 +197,7 @@
 #' }
 EMggm<-function(dat,
                 max.iter = 500, est.tol = 1e-7, start=c("diag","pairwise","listwise","full"), glassoversion=c("glasso","glassoFast","glassonostart","none"), # em.prec options
-                rho = 0, rhoselect = c("ebic","kfold"), # how to select model
+                rho = 0, rhoselect = c("ebic","kfold","bic","aic"), # how to select model
                 N=NULL, gam = .5, zero.tol = 1e-10, # stuff for EBIC
                 k = 5, seed=NULL, # for kfold
                 debug=0,
@@ -205,7 +205,7 @@ EMggm<-function(dat,
   
   rhoselect<-match.arg(rhoselect)
   
-  if(rhoselect=="ebic"){
+  if(rhoselect %in% c("ebic","bic","aic")){
     
     # how to obtain "N"?
     if(is.null(N)){
@@ -224,13 +224,13 @@ EMggm<-function(dat,
       mods[[m]] <- em.prec(dat,  max.iter = max.iter, tol=est.tol, start=start, debug=debug, glassoversion=glassoversion, rho=rho[m], ...)
     }
     
-    # Calculate EBIC for all models
+    # Calculate IC for all models
     crit<-vector("numeric")
     for(m in 1:length(rho)){
       if(convfail & !mods[[m]]$conv){
         val <- NA
       } else {
-        val <- EBICggm(mods[[m]]$p.est, dat, N, gam=gam, tol=zero.tol)
+        val <- ICggm(dat=dat, index=toupper(rhoselect), mu=mods[[m]]$mu, K=mods[[m]]$K, N=N, gam=gam, tol=zero.tol)
       }
       crit<-c(crit,val)
     }
@@ -285,6 +285,7 @@ EMggm<-function(dat,
 
 # k-fold cross-validation
 #' @importFrom caret createFolds
+#' @useDynLib EMgaussian
 fiml.ggm.cv <- function(dat, rho,  max.iter = 500, est.tol = 1e-7, start=c("diag","pairwise","listwise","full"), V=10, seed=NULL, debug=0, glassoversion, ...){
   if(!is.null(seed)) {set.seed(seed)}
   N <- nrow(dat)
@@ -324,36 +325,6 @@ fiml.ggm.cv <- function(dat, rho,  max.iter = 500, est.tol = 1e-7, start=c("diag
   out$rho <- rho
   
   return(out)
-}
-
-# EBIC
-#' @importFrom lavaan lav_matrix_vechr_reverse
-EBICggm <- function(p, dat, N=NULL, gam=.5, tol=1e-32){
-  
-  # how to obtain "N"?
-  if(is.null(N)){
-    # next 3 lines copied and modified from bootnet, which does pairwise_average by default but accidentally counts the univariate (diagonal) elements
-    xmat <- as.matrix(!is.na(dat))
-    misMatrix <- t(xmat) %*% xmat
-    N<-mean(misMatrix[lower.tri(misMatrix)])
-  }
-  
-  # -2L
-  neg2l <- 2*nllggm.wrap(p, dat)
-  
-  # number of "nodes"
-  P <- ncol(dat)
-  
-  # how do we know how many non-zero edges there are?
-  
-  # actually look at off-diagonal elements of K
-  K <- lav_matrix_vechr_reverse(p[(P+1):length(p)])
-  E<-sum(abs(K[lower.tri(K)])>tol)
-  
-  out <- neg2l + E*log(N) + 4*gam*E*log(P)
-  
-  return(out)
-  
 }
 
 #' Create sequence of possible tuning parameter values

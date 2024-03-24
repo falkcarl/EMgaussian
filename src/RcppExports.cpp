@@ -50,15 +50,15 @@ BEGIN_RCPP
 END_RCPP
 }
 // nllcov
-double nllcov(const arma::mat d, const arma::colvec muest, const arma::mat sigest);
-RcppExport SEXP _EMgaussian_nllcov(SEXP dSEXP, SEXP muestSEXP, SEXP sigestSEXP) {
+double nllcov(const arma::mat dat, const arma::colvec mu, const arma::mat sig);
+RcppExport SEXP _EMgaussian_nllcov(SEXP datSEXP, SEXP muSEXP, SEXP sigSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
-    Rcpp::traits::input_parameter< const arma::mat >::type d(dSEXP);
-    Rcpp::traits::input_parameter< const arma::colvec >::type muest(muestSEXP);
-    Rcpp::traits::input_parameter< const arma::mat >::type sigest(sigestSEXP);
-    rcpp_result_gen = Rcpp::wrap(nllcov(d, muest, sigest));
+    Rcpp::traits::input_parameter< const arma::mat >::type dat(datSEXP);
+    Rcpp::traits::input_parameter< const arma::colvec >::type mu(muSEXP);
+    Rcpp::traits::input_parameter< const arma::mat >::type sig(sigSEXP);
+    rcpp_result_gen = Rcpp::wrap(nllcov(dat, mu, sig));
     return rcpp_result_gen;
 END_RCPP
 }
@@ -101,15 +101,15 @@ BEGIN_RCPP
 END_RCPP
 }
 // nllprec
-double nllprec(const arma::mat d, const arma::colvec muest, const arma::mat kest);
-RcppExport SEXP _EMgaussian_nllprec(SEXP dSEXP, SEXP muestSEXP, SEXP kestSEXP) {
+double nllprec(const arma::mat dat, const arma::colvec mu, const arma::mat K);
+RcppExport SEXP _EMgaussian_nllprec(SEXP datSEXP, SEXP muSEXP, SEXP KSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
-    Rcpp::traits::input_parameter< const arma::mat >::type d(dSEXP);
-    Rcpp::traits::input_parameter< const arma::colvec >::type muest(muestSEXP);
-    Rcpp::traits::input_parameter< const arma::mat >::type kest(kestSEXP);
-    rcpp_result_gen = Rcpp::wrap(nllprec(d, muest, kest));
+    Rcpp::traits::input_parameter< const arma::mat >::type dat(datSEXP);
+    Rcpp::traits::input_parameter< const arma::colvec >::type mu(muSEXP);
+    Rcpp::traits::input_parameter< const arma::mat >::type K(KSEXP);
+    rcpp_result_gen = Rcpp::wrap(nllprec(dat, mu, K));
     return rcpp_result_gen;
 END_RCPP
 }

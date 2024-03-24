@@ -13,8 +13,16 @@ EMcyclecov <- function(D, muest, sigest) {
     .Call('_EMgaussian_EMcyclecov', PACKAGE = 'EMgaussian', D, muest, sigest)
 }
 
-nllcov <- function(d, muest, sigest) {
-    .Call('_EMgaussian_nllcov', PACKAGE = 'EMgaussian', d, muest, sigest)
+#' Negative log-likelihood, covariance matrix parameterization
+#' 
+#' @param dat (matrix) data.
+#' @param mu (vector) means.
+#' @param sig (matrix) covariance matrix.
+#' @details Computes the negative log-likelihood under missing data for the given value of means and covariances.
+#' @return Numeric value of the negative log-likelihood.
+#' @export
+nllcov <- function(dat, mu, sig) {
+    .Call('_EMgaussian_nllcov', PACKAGE = 'EMgaussian', dat, mu, sig)
 }
 
 imp1matprec <- function(D, muest, kest) {
@@ -29,7 +37,14 @@ EMcycleprec <- function(D, muest, kest) {
     .Call('_EMgaussian_EMcycleprec', PACKAGE = 'EMgaussian', D, muest, kest)
 }
 
-nllprec <- function(d, muest, kest) {
-    .Call('_EMgaussian_nllprec', PACKAGE = 'EMgaussian', d, muest, kest)
+#' Negative log-likelihood, precision matrix parameterization
+#' @param dat (matrix) data.
+#' @param mu (vector) means.
+#' @param K (matrix) precision matrix.
+#' @details Computes the negative log-likelihood under missing data for the given value of means and precision matrix.
+#' @return Numeric value of the negative log-likelihood.
+#' @export        
+nllprec <- function(dat, mu, K) {
+    .Call('_EMgaussian_nllprec', PACKAGE = 'EMgaussian', dat, mu, K)
 }
 

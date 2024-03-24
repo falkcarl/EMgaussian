@@ -88,22 +88,28 @@ Rcpp::List EMcycleprec(const Rcpp::NumericMatrix& D, const arma::colvec& muest, 
 
   return out;
 }
-        
-// Negative log-likelihood; precision matrix parameterization
+
+//' Negative log-likelihood, precision matrix parameterization
+//' @param dat (matrix) data.
+//' @param mu (vector) means.
+//' @param K (matrix) precision matrix.
+//' @details Computes the negative log-likelihood under missing data for the given value of means and precision matrix.
+//' @return Numeric value of the negative log-likelihood.
+//' @export        
 // [[Rcpp::export]]
-double nllprec(const arma::mat d, const arma::colvec muest, const arma::mat kest){
+double nllprec(const arma::mat dat, const arma::colvec mu, const arma::mat K){
     
-    int N = d.n_rows;
-    int J = d.n_cols;
+    int N = dat.n_rows;
+    int J = dat.n_cols;
     
-    arma::mat kinv = inv(kest);
+    arma::mat kinv = inv(K);
     
     double nll = 0;
     
     for(int i = 0; i<N; i++){
-      arma::uvec io = find_finite(d.row(i));
+      arma::uvec io = find_finite(dat.row(i));
       arma::uvec idx = {static_cast<arma::uword>(i)};
-      nll += (0.5*(log(det(kinv.submat(io,io))) + (d.submat(idx,io).t() - muest(io)).t() * inv(kinv.submat(io,io)) * (d.submat(idx,io).t() - muest(io)) + J*log(2*arma::datum::pi))).eval()(0,0);
+      nll += (0.5*(log(det(kinv.submat(io,io))) + (dat.submat(idx,io).t() - mu(io)).t() * inv(kinv.submat(io,io)) * (dat.submat(idx,io).t() - mu(io)) + J*log(2*arma::datum::pi))).eval()(0,0);
     }
     
     return(nll);

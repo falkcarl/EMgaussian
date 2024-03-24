@@ -93,19 +93,26 @@ Rcpp::List EMcyclecov(const Rcpp::NumericMatrix& D, const arma::colvec& muest, c
   return out;
 }
 
-// Negative log-likelihood; covariance matrix parameterization
+//' Negative log-likelihood, covariance matrix parameterization
+//' 
+//' @param dat (matrix) data.
+//' @param mu (vector) means.
+//' @param sig (matrix) covariance matrix.
+//' @details Computes the negative log-likelihood under missing data for the given value of means and covariances.
+//' @return Numeric value of the negative log-likelihood.
+//' @export
 // [[Rcpp::export]]
-double nllcov(const arma::mat d, const arma::colvec muest, const arma::mat sigest){
+double nllcov(const arma::mat dat, const arma::colvec mu, const arma::mat sig){
   
-  int N = d.n_rows;
-  int J = d.n_cols;
+  int N = dat.n_rows;
+  int J = dat.n_cols;
   
   double nll = 0;
   
   for(int i = 0; i<N; i++){
-    arma::uvec io = find_finite(d.row(i));
+    arma::uvec io = find_finite(dat.row(i));
     arma::uvec idx = {static_cast<arma::uword>(i)};       
-    nll += (0.5*(log(det(sigest.submat(io,io))) + (d.submat(idx,io).t() - muest(io)).t() * inv(sigest.submat(io,io)) * (d.submat(idx,io).t() - muest(io)) + J*log(2*arma::datum::pi))).eval()(0,0);
+    nll += (0.5*(log(det(sig.submat(io,io))) + (dat.submat(idx,io).t() - mu(io)).t() * inv(sig.submat(io,io)) * (dat.submat(idx,io).t() - mu(io)) + J*log(2*arma::datum::pi))).eval()(0,0);
   }
   
   return nll;
