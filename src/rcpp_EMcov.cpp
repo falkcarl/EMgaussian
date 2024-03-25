@@ -112,7 +112,7 @@ double nllcov(const arma::mat dat, const arma::colvec mu, const arma::mat sig){
   for(int i = 0; i<N; i++){
     arma::uvec io = find_finite(dat.row(i));
     arma::uvec idx = {static_cast<arma::uword>(i)};       
-    nll += (0.5*(log(det(sig.submat(io,io))) + (dat.submat(idx,io).t() - mu(io)).t() * inv(sig.submat(io,io)) * (dat.submat(idx,io).t() - mu(io)) + J*log(2*arma::datum::pi))).eval()(0,0);
+    nll += (0.5*(log(det(sig.submat(io,io))) + (dat.submat(idx,io).t() - mu(io)).t() * inv(sig.submat(io,io)) * (dat.submat(idx,io).t() - mu(io)) + (io.size())*log(2*arma::datum::pi))).eval()(0,0);
   }
   
   return nll;
