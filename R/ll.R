@@ -158,7 +158,7 @@ nll.parpen <- function(p, dat, param = c("prec","cov"), fix.idx=NULL, fix.val=NU
       K <- K[lower.tri(K)]
     }
     pen <- lambda*sum(abs(K))
-    out<-out-pen
+    out<-out+pen
   }
   return(out)
 }
