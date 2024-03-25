@@ -94,8 +94,7 @@ Rcpp::List EMcycleprec(const Rcpp::NumericMatrix& D, const arma::colvec& muest, 
 double nllprec(const arma::mat d, const arma::colvec muest, const arma::mat kest){
     
     int N = d.n_rows;
-    int J = d.n_cols;
-    
+
     arma::mat kinv = inv(kest);
     
     double nll = 0;

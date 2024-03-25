@@ -98,8 +98,7 @@ Rcpp::List EMcyclecov(const Rcpp::NumericMatrix& D, const arma::colvec& muest, c
 double nllcov(const arma::mat d, const arma::colvec muest, const arma::mat sigest){
   
   int N = d.n_rows;
-  int J = d.n_cols;
-  
+
   double nll = 0;
   
   for(int i = 0; i<N; i++){
